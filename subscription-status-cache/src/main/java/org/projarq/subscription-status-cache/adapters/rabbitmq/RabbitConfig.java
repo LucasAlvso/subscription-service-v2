@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.UUID;
 
-@Configuration("rabbitConfig")
+@Configuration
 public class RabbitConfig
 {
 	@Bean
@@ -21,11 +21,11 @@ public class RabbitConfig
 		FanoutExchange fanoutExchange = new FanoutExchange("subscription-status-update-fanout");
 
 		return new Declarables
-		(
-			uniqueQueue,
-			fanoutExchange,
-			BindingBuilder.bind(uniqueQueue).to(fanoutExchange)
-		);
+				(
+						uniqueQueue,
+						fanoutExchange,
+						BindingBuilder.bind(uniqueQueue).to(fanoutExchange)
+				);
 	}
 
 	@Bean

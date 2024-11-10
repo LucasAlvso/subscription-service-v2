@@ -1,0 +1,65 @@
+services:
+  subscription_gateway:
+    environment:
+      - EUREKA_SERVICE_URL=http://discoveryservice:8001/eureka/
+    build:
+      context: subscription-gateway
+    ports:
+      - 8080:8080
+    networks:
+      - eureka
+    depends_on:
+      - discovery_service
+  discovery_service:
+    environment:
+      - EUREKA_SERVICE_URL=http://discoveryservice:8001/eureka/
+    build:
+      context: discovery-service
+    ports:
+      - 8001
+    hostname: discoveryservice
+    networks:
+      - eureka
+  subscription_status_cache:
+    environment:
+      - EUREKA_SERVICE_URL=http://discoveryservice:8001/eureka/
+      - RABBITMQ_SERVICE_URL=rabbitmq
+    build:
+      context: subscription-status-cache
+    ports:
+      - 8002
+    networks:
+      - eureka
+      - rabbitmq
+    deploy:
+      replicas: 3
+    depends_on:
+      - discovery_service
+      - rabbitmq
+      - subscription_service
+  subscription_service:
+    environment:
+      - EUREKA_SERVICE_URL=http://discoveryservice:8001/eureka/
+      - RABBITMQ_SERVICE_URL=rabbitmq
+    build:
+      context: subscription-service
+    ports:
+      - 8003
+    networks:
+      - eureka
+      - rabbitmq
+    depends_on:
+      - discovery_service
+      - rabbitmq
+  rabbitmq:
+    image: rabbitmq:management
+    ports:
+      - 5672:5672 #JMS Port
+      - 15672:15672 #Management Port - default user:pass = guest:guest
+    networks:
+      - rabbitmq
+networks:
+  eureka:
+    driver: bridge
+  rabbitmq:
+    driver: bridge

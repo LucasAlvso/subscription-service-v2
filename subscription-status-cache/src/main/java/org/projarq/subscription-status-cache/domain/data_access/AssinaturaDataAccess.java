@@ -1,7 +1,6 @@
 package org.projarq.subscription_status_cache.domain.data_access;
 
 import org.projarq.subscription_status_cache.adapters.AssinaturaProxy;
-import org.projarq.subscription_status_cache.adapters.SubscriptionProxy;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;

@@ -2,10 +2,6 @@ spring:
     cloud:
         gateway:
             routes:
-                - id: subscription-status-service
-                  uri: lb://subscription-status-service
-                  predicates:
-                        - Path=**/assinvalida/**
                 - id: subscription-service
                   uri: lb://subscription-service
                   predicates:

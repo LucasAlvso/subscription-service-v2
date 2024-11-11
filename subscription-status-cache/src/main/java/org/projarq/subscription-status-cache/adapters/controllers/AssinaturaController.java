@@ -16,7 +16,7 @@ public class AssinaturaController
     @GetMapping("/assinvalida/{assinaturaId}")
     public boolean getStatusAssinatura(@PathVariable long assinaturaId)
     {
-        return buscarStatusAssinatura.getStatusAssinatura(assinaturaId);
+        return !buscarStatusAssinatura.getStatusAssinatura(assinaturaId);
     }
 
     private final BuscarStatusAssinatura buscarStatusAssinatura;

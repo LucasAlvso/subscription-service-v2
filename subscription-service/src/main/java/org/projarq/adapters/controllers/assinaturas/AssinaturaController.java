@@ -69,7 +69,7 @@ public class AssinaturaController
 		return "ATIVA".equalsIgnoreCase(assinatura.status());
 	}
 
-	@GetMapping("/servcad/assinaturas/datatermino/{assinaturaId}")
+	@GetMapping("/servcad/assinaturas/datatermino/{codAssinatura}")
 	public LocalDate getDataVigenciaPorId(@PathVariable @NonNull long codAssinatura)
 	{
 		Optional<Assinatura> foundSubscription = buscarAssinaturas.findAssinaturaById(codAssinatura);

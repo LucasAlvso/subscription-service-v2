@@ -1,6 +1,7 @@
 package org.projarq.adapters.repositories;
 
 import org.projarq.domain.entities.Assinatura;
+import org.projarq.domain.entities.AtualizacaoStatusAssinatura;
 import org.projarq.adapters.jpa.entities.AplicativoJpaEntity;
 import org.projarq.adapters.jpa.entities.ClienteJpaEntity;
 import org.projarq.adapters.jpa.entities.AssinaturaJpaEntity;
@@ -13,6 +14,8 @@ import org.projarq.domain.data_access.assinaturas.BuscarAssinaturasDataAccess;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,13 +29,15 @@ public class AssinaturaRepository implements CriarAssinaturaDataAccess, BuscarAs
     private final AssinaturaJpaRepository assinaturaJpaRepository;
     private final ClienteJpaRepository clienteJpaRepository;
     private final AplicativoJpaRepository aplicativoJpaRepository;
+    private final RabbitTemplate rabbitTemplate;
 
     @Autowired
-    public AssinaturaRepository(AssinaturaJpaRepository assinaturaJpaRepository, ClienteJpaRepository clienteJpaRepository, AplicativoJpaRepository aplicativoJpaRepository)
+    public AssinaturaRepository(AssinaturaJpaRepository assinaturaJpaRepository, ClienteJpaRepository clienteJpaRepository, AplicativoJpaRepository aplicativoJpaRepository, RabbitTemplate rabbitTemplate)
     {
         this.assinaturaJpaRepository = assinaturaJpaRepository;
         this.clienteJpaRepository = clienteJpaRepository;
         this.aplicativoJpaRepository = aplicativoJpaRepository;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     @Override
@@ -101,6 +106,8 @@ public class AssinaturaRepository implements CriarAssinaturaDataAccess, BuscarAs
 
         AssinaturaJpaEntity assinaturaNova = assinaturaExistente.get();
         assinaturaNova.setFimVigencia(novaVigencia);
+        rabbitTemplate.convertAndSend("subscription-status-update-fanout", "", new AtualizacaoStatusAssinatura(codAssinatura, novaVigencia));
+
 
         return assinaturaJpaRepository.save(assinaturaNova).parseParaDomainEntity();
     }
